@@ -53,7 +53,7 @@ class VerticalRule: RuleView {
             smallTicks = 4
             tinyTicks = 1
         case .user:
-            var scale:Float
+            let scale:Float
             switch(prefs.userUnitScreenUnit) {
             case .pixels:      scale = 1.0
             case .millimeters: scale = Float(screen?.dpmm.width ?? NSScreen.defaultDpmm)
