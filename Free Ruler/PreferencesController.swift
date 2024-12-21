@@ -105,13 +105,36 @@ class PreferencesController: NSWindowController, NSWindowDelegate, NotificationP
     @IBAction func setUserScreenValue(_ Sender: Any) {
         prefs.userUnitScreenValue = UserUnitScreenValueTbx.floatValue
     }
+    var screen: NSScreen? {
+        guard let window = window else {
+            return nil
+        }
+        return NSScreen.screens.first { $0.frame.intersects(window.convertToScreen(self.UserUnitScreenUnitPopup.frame)) }
+    }
     @IBAction func setUserScreenUnit(_ Sender: Any) {
+        let oldScale:Float
+        switch(prefs.userUnitScreenUnit) {
+        case .pixels:      oldScale = 1.0
+        case .millimeters: oldScale = Float(screen?.dpmm.width ?? NSScreen.defaultDpmm)
+        case .inches:      oldScale = Float(screen?.dpi.width ?? NSScreen.defaultDpi)
+        default:           oldScale = 1.0
+        }
+
         switch(UserUnitScreenUnitPopup.indexOfSelectedItem){
         case 0:  prefs.userUnitScreenUnit = .pixels
         case 1:  prefs.userUnitScreenUnit = .millimeters
         case 2:  prefs.userUnitScreenUnit = .inches
         default: prefs.userUnitScreenUnit = .pixels
         }
+
+        let newScale:Float
+        switch(prefs.userUnitScreenUnit) {
+        case .pixels:      newScale = 1.0
+        case .millimeters: newScale = Float(screen?.dpmm.width ?? NSScreen.defaultDpmm)
+        case .inches:      newScale = Float(screen?.dpi.width ?? NSScreen.defaultDpi)
+        default:           newScale = 1.0
+        }
+        prefs.userUnitScreenValue = prefs.userUnitScreenValue * oldScale / newScale;
     }
     @IBAction func setUserUnitValue(_ Sender: Any) {
         prefs.userUnitValue = UserUnitValueTbx.floatValue
